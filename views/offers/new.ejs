@@ -1,0 +1,22 @@
+<% include ../partials/header %>
+    <div class="row">
+        <h1 style="text-align: center">Make an offer to <span class="boldWord"><%= usedstuff.name %><span></h1>
+        <div style="width: 30%; margin: 25px auto;">
+            <form action="/<%= usedstuff._id %>/offers" method="POST">
+                <div class="form-group">
+                    <input class="form-control" type="number" min="0" max="1000000" name="offer[price]" placeholder="offer price" required>
+                </div>
+                <small style="color:grey">After you submit an offer, your email will be shown to poster only.</small>
+                <br>
+                <small style="color:grey">Other people <span class="boldWord">cannot</span> see it.</small>
+                <br>
+                <br>
+                <div class="form-group">
+                    <button class="btn btn-lg btn-success btn-block boldWord">Submit!</button>
+                </div>
+            </form>
+            <a href="/<%=usedstuff._id%>" class="greenColor">Go Back</a>
+        </div>
+    </div>
+<% include ../partials/footer %>
+

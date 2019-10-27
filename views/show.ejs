@@ -1,0 +1,148 @@
+<% include ./partials/header %>
+
+<% var currentUserId = currentUser ? currentUser._id : 0 %>
+<% var usedstuffId = currentUser ? usedstuff._id : 0 %>
+<% var currentUser_saveditems = currentUser ? currentUser.saveditems : null %>
+
+  <script>
+    $(document).ready(function(){
+      $(".star").click(function() {
+          $(this).toggleClass("glyphicon-star glyphicon-star-empty");
+          var currentUserId = "<%= currentUserId %>"; // get ejs avariale
+          var usedstuffId = "<%= usedstuffId %>";
+          var currentUser_saveditems = "<%= currentUser_saveditems %>";
+          
+          if(currentUser_saveditems.includes(usedstuffId)) {
+            // var i = currentUser_saveditems.indexOf(usedstuffId);
+            // currentUser.saveditems.splice(i, 1);
+            $.ajax({
+              url: window.location.href + "/saveditems",
+              data: {
+                currentUserId: currentUserId,
+                usedstuffId: usedstuffId
+              },
+              type: 'DELETE'
+            });
+            
+          } else {
+            $.ajax({
+              url: window.location.href + "/saveditems",
+              data: {
+                currentUserId: currentUserId,
+                usedstuffId: usedstuffId
+              },
+              type: 'PUT'
+            });
+          }
+      });
+    });
+  </script>
+
+<div class="row" style="margin-top:10px">
+  <div class="col-sm-3">
+    <!--<p class="lead">Map</p>-->
+    <%var address = usedstuff.location.replace(" ","+");%>
+    <p class="breakWord"><span class="boldWord">Location:</span> <span class="greenColor">near</span> <%=usedstuff.location%></p>
+    <img class="img-responsive thumbnail" src="https://image.maps.cit.api.here.com/mia/1.6/mapview?app_id=BvDECiSoKxOYlaUP08pI&app_code=WyR6_qxgXonr_gUIPfgxww&ci=<%= address %>&h=350&w=280&z=12&u=1k&f=1&nodot=true&ml=eng&style=flame" alt="Map of <%= address %> is not avariale">
+  </div>
+  
+  <div class="col-sm-6">
+    <img class="img-responsive thumbnail" style="margin: auto auto;"src="data:<%=usedstuff.image.contentType%>;base64, <%=usedstuff.image.data%>">
+  </div>
+  
+  <div class="col-sm-3">
+    <div class="thumbnail">
+      <div class="caption-full">
+        <h4 class="pull-right">
+          <span class="greenColorBold">$<%= usedstuff.cost %></span>
+        </h4>
+        <h4 class=" boldWord breakWord"><%=usedstuff.name%></h4>
+        <p class="breakWord"><%= usedstuff.description %></p>
+        <p>
+          <span class='fas fa-user-circle'></span> <span class="boldWord"><%= usedstuff.author.username %></span><br>
+          <small><%= moment(usedstuff.createdAt).format("MMM DD, YYYY") %></small>
+        </p>
+        <!--<button class='far fa-star' style='font-size:24px'></button>-->
+        <% if(currentUser) { %>
+          <% if(!currentUser_saveditems.includes(usedstuffId.toString())) {%>
+            <div><span class="star glyphicon glyphicon-star-empty"></span></div>
+          <% } else { %>
+            <div><span class="star glyphicon glyphicon-star"></span></div>
+          <% } %>
+        <% } %>
+        <% if(currentUser && usedstuff.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin){ %>
+        <a class="btn btn-warning btn-sm" href="/<%= usedstuff._id %>/edit">Edit info</a>
+        <form action="/<%= usedstuff._id %>?_method=DELETE" method="POST" class="delete-form">
+          <button class="btn btn-danger btn-sm">Delete</button>
+        </form>
+        <% } %>
+      </div>
+    </div>
+    
+    <div class="well">
+      <div class="text-right">
+        <% if(currentUser && usedstuff.author.id.equals(currentUser._id)){ %>
+          <a class="btn btn-success" style="font-weight: bold;" href="#" disabled>Make offer</a>
+        <% } else { %>
+          <a class="btn btn-success" style="font-weight: bold;" href="/<%= usedstuff._id %>/offers/new">Make offer</a>
+        <% } %>
+        <a class="btn btn-default greenColorBold" href="/<%= usedstuff._id %>/comments/new">Comment</a>
+      </div>
+      
+      <!--display offers-->
+      <% var offerList = usedstuff.offers%>
+      <% offerList.sort(function(a, b){return b.price - a.price})%>
+      <% offerList.forEach(function(offer){ %> <!--BEGIN of forEach-->
+      <hr class="hrMargin">
+      <div class="row">
+        <div class="col-sm-12">
+          <strong><span class='fas fa-user'></span> <%= offer.author.username %></strong>
+          <small class="greyColor"><span class="pull-right"><%= moment(offer.createdAt).format('MMM DD, YYYY') %></span></small>
+          <div>
+            <span class="greenColorBold">Offer: $<%= offer.price %></span>
+            <% if(currentUser && usedstuff.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin){ %>
+              <br>
+              <span class="breakWord">Email: <%= offer.author.email %></span>
+            <% } %>
+            <% if(currentUser && offer.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin){ %>
+              <div class="pull-right">
+                <a href="/<%= usedstuff._id %>/offers/<%= offer._id %>/edit" class="btn btn-xs btn-warning">Edit</a>
+                <form class="delete-form" action="/<%= usedstuff._id %>/offers/<%=offer._id%>?_method=DELETE" method="POST">
+                  <button class="btn btn-xs btn-danger">Delete</button>
+                </form>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      <% }) %> <!--END of forEach-->
+      
+      <div class="aLine"></div>
+      <!--display comments-->
+      <!--reverse comment (time reverse order, new at top)-->
+      <% usedstuff.comments.reverse().forEach(function(comment){ %> <!--BEGIN of forEach-->
+      <div class="row">
+        <div class="col-sm-12">
+          <strong><span class='fas fa-user'></span> <%= comment.author.username %></strong>
+          <small class="greyColor"><span class="pull-right"><%= moment(comment.createdAt).format('MMM DD, YYYY') %></span></small>
+          <div>
+            <span style="word-wrap: break-word;"><%= comment.text %></span>
+            <% if(currentUser && comment.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin){ %>
+              <div class="pull-right">
+                <a href="/<%=usedstuff._id%>/comments/<%=comment._id%>/edit" class="btn btn-xs btn-warning">Edit</a>
+                <form class="delete-form" action="/<%=usedstuff._id%>/comments/<%=comment._id%>?_method=DELETE" method="POST">
+                  <button class="btn btn-xs btn-danger">Delete</button>
+                </form>
+              </div>
+            <% } %>
+            <hr class="hrMargin">
+          </div>
+        </div>
+      </div>
+      <% }) %> <!--END of forEach-->
+  
+    </div> <!--END of <div class="well">-->
+  </div>
+</div>
+
+<% include ./partials/footer %>

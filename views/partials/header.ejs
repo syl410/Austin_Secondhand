@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Austin Secondhand</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/stylesheets/main.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+      <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  </head>
+  <body>
+  <nav class="navbar navbar-inverse">
+      <div class="container">
+          <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="/about">Austin Secondhand</a>
+          </div>
+          <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="nav navbar-nav">
+              <li class="<%= typeof page !== 'undefined' && page === 'usedstuffs' ? 'active' : '' %>"><a href="/">Home</a></li>
+            </ul>
+            <!--<a href="/new"><button class="btn btn-success navbar-btn" >I want to sell</button></a>-->
+            <a href="/new" style="font-weight: bold;" class="btn btn-success navbar-btn">I want to sell</a>
+            <ul class="nav navbar-nav navbar-right ">
+                <% if(!currentUser){ %>
+                    <li class="<%= typeof page !== 'undefined' && page === 'login' ? 'active' : '' %>"><a class="nav-link" href="/login">Login</a></li>
+                    <li class="<%= typeof page !== 'undefined' && page === 'register' ? 'active' : '' %>"><a class="nav-link" href="/register">Sign Up</a></li>
+                <% } else { %>
+                    <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> < %= currentUser.username % ></a></li>-->
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" role="button" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span> <%= currentUser.username %></a>
+                      <div class="dropdown-menu" style="left: 0; right: auto; min-width: 120px; text-align:left; padding:0;" aria-labelledby="navbarDropdownMenuLink">
+                        <a class="dropdown-item dropdownText list-group-item" href="/user/<%= currentUser._id %>/posts">My stuffs</a>
+                        <a class="dropdown-item dropdownText list-group-item" href="/user/<%= currentUser._id %>/saveditems">saved items</a>
+                        <a class="dropdown-item dropdownText list-group-item" href="/user/<%= currentUser._id %>/offers">offers</a>
+                      </div>
+                    </li>
+                    <li><a class="nav-link" href="/logout">Logout</a></li>
+                <% } %>
+            </ul>
+          </div>
+      </div>
+  </nav>
+  
+  <div class="container">
+     <% if(error && error.length > 0) { %>
+       <div class="alert alert-danger"><p><%=error %></p></div>
+     <% } %>
+     
+     <% if(success && success.length > 0) { %>
+       <div class="alert alert-success"><p><%= success %></p></div>
+     <% } %>
+  </div>
+  <div class="container">

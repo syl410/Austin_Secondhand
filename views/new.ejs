@@ -1,0 +1,72 @@
+<% include ./partials/header %>
+                <script>
+                    
+                    // $("#YYY").attr('disabled', true);
+                    // $('#submit').prop("disabled", true);
+                    // .bind() Attach a click event to the element
+                    $(document).ready(function(){
+                        $("#xxx").attr('disabled', false);
+                        $('#picture').bind('change', function() {
+                            if(this.files[0].size > 5000000) {
+                                $("#xxx").attr('disabled', true);
+                                $("small").css("color", "red");
+                            } else {
+                                $("#xxx").attr('disabled', false);
+                                $("small").css("color", "grey");
+                            }
+                        });
+                        
+                        //var picsize = $(this).image[0].size;
+                       
+                    });
+                </script>
+
+
+    <div class="row">
+        <h1 style="text-align: center">Post an item to sell</h1>
+        <div style="width: 30%; margin: 25px auto;">
+            <form action="/" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input class="form-control" type="text" name="name" id="name" placeholder="Used phone" required maxlength="32">
+                </div>
+                <div class="form-group">
+                    <label for="image">Upload photo</label>
+                    <input id="picture" type="file" name="image" accept="image/*" required>
+                    <small class="greyColor">Photo size should be less then 5MB.</small>
+                </div>
+                <div class="form-group">
+                    <label for="cost">Price</label>
+                    <input class="form-control" type="number" name="cost" id="cost" placeholder="9.99" step="0.01" min="0" max="1000000" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input class="form-control" type="text" name="location" id="location" placeholder="Street name, Austin, TX (no need detailed info)" maxlength="64" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <input class="form-control" type="text" name="description" id="description" placeholder="descripe your item" maxlength="256">
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <br>
+                    <select class="custom-select custom-select-success" type="text" name="category" id="category" style="color:black">
+                        <option selected>Choose ...</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Furniture">Furniture</option>
+                        <option value="Appliances">Appliances</option>
+                        <option value="Automotive">Automotive</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <br>
+                <div class="form-group">
+                    <button id="xxx" class="btn btn-lg btn-success btn-block boldWord">Post!</button>
+                </div>
+            </form>
+            <a href="/" class="greenColor" id="YYY" >Go Back</a>
+        </div>
+    </div>
+<% include ./partials/footer %>
+

@@ -1,0 +1,36 @@
+<% include ../partials/header %>
+<h1><%= userpostoffersave %></h1>
+<br>
+<div class="row text-center flex-wrap" id="userUsedStuff-grid">
+    <% userUsedStuffs.reverse().forEach(function(userUsedStuff){ %>
+        <div class="col-md-3 col-sm-4 col-xs-6">
+            <a href="/<%= userUsedStuff._id %>">
+                <div class="thumbnail">
+                    <%var str = "data:" + userUsedStuff.image.contentType + ";base64, " + userUsedStuff.image.data;%>
+                    <div class="imgbackground" style='background-image: url("<%=str%>")'></div>
+                    <div class="caption" class="row">                        
+                        <p>
+                            <span class="left" style="color:green; font-size:medium; font-weight:bold">
+                                $<%=userUsedStuff.cost%>
+                            </span>
+                        </p>
+                    </div>                    
+                    <div class="caption" class="row">                        
+                        <p>
+                            <span class="left" style="color:black; font-size:medium;">
+                                <% var stuffName = userUsedStuff.name;
+                                    if(userUsedStuff.name.length > 20) {
+                                        stuffName = userUsedStuff.name.substring(0,20) + "...";
+                                }%>
+                                <%=stuffName%>
+                            </span>
+                            <br>
+                        </p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    <% }); %>
+</div>
+
+<% include ../partials/footer %>
