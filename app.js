@@ -59,7 +59,7 @@ var commentRoutes    = require("./routes/comments"),
 mongoose.Promise = global.Promise;
 
 // const databaseUri = process.env.MONGODB_URI || 'mongodb://localhost/AustinSecondHand_v11';
-const databaseUri = process.env.MONGODB_URI || 'mongodb+srv://syl410:syl5689@cluster0-6c1ey.mongodb.net/test?retryWrites=true&w=majority';
+const databaseUri = process.env.MONGODB_URI || 'mongodb+srv://syl410:syl5689@cluster0-6c1ey.mongodb.net/Austin_Secondhand?retryWrites=true&w=majority';
 //  process.env.MONGODB_URI may be undefined
 
 mongoose.connect(databaseUri, { useMongoClient: true })
