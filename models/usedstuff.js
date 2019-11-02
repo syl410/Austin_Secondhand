@@ -32,4 +32,4 @@ var usedstuffSchema = new mongoose.Schema({
 } // new mongoDB doesn't support $pushall, so it needs push each
 );
 
-module.exports = mongoose.model("Campground", usedstuffSchema);
+module.exports = mongoose.model("Usedstuff", usedstuffSchema);
