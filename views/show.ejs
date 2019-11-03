@@ -39,18 +39,17 @@
   </script>
 
 <div class="row" style="margin-top:10px">
-  <div class="col-sm-3">
-    <!--<p class="lead">Map</p>-->
+  <div class="col-md-3 col-sm-4">
     <%var address = usedstuff.location.replace(" ","+");%>
     <p class="breakWord"><span class="boldWord">Location:</span> <span class="greenColor">near</span> <%=usedstuff.location%></p>
     <img class="img-responsive thumbnail" src="https://image.maps.cit.api.here.com/mia/1.6/mapview?app_id=BvDECiSoKxOYlaUP08pI&app_code=WyR6_qxgXonr_gUIPfgxww&ci=<%= address %>&h=350&w=280&z=12&u=1k&f=1&nodot=true&ml=eng&style=flame" alt="Map of <%= address %> is not avariale">
   </div>
   
-  <div class="col-sm-6">
-    <img class="img-responsive thumbnail" style="margin: auto auto;"src="data:<%=usedstuff.image.contentType%>;base64, <%=usedstuff.image.data%>">
+  <div class="col-md-6 col-sm-8">
+    <img class="img-responsive thumbnail" style="margin: auto auto" src="data:<%=usedstuff.image.contentType%>;base64, <%=usedstuff.image.data%>">
   </div>
   
-  <div class="col-sm-3">
+  <div class="col-md-3 col-sm-12">
     <div class="thumbnail">
       <div class="caption-full">
         <h4 class="pull-right">

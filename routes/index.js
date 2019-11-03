@@ -146,7 +146,7 @@ router.get("/Electronics", function(req, res){
     });
 });
 
-
+/*
 function sleep(milliseconds) {
     console.log("start sleeping");
   var start = new Date().getTime();
@@ -156,6 +156,7 @@ function sleep(milliseconds) {
     }
   }
 }
+*/
 
 //CREATE - add new usedstuff to DB
 //router.post("/", isloggedIn, isTooBig, upload.single('image'), function(req, res){
@@ -207,6 +208,7 @@ router.post("/", isLoggedIn, checkPostNumber, upload.single('image'), function(r
                             req.flash("error", err.message); 
                         } 
                     });
+                    req.flash("success","You item has been posted!");
                     //redirect back to usedstuffs page
                     res.redirect("/");
                 }
@@ -343,7 +345,7 @@ router.delete("/:id", isLoggedIn, checkUserUsedstuff, function(req, res) {
                 }
             });
             
-            req.flash('error', 'You item deleted!');
+            req.flash('error', 'You item has been deleted!');
             res.redirect('/');
           });
       }
