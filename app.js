@@ -32,24 +32,17 @@ var Comment     = require("./models/comment");
 var Offer     = require("./models/offer");
 var User        = require("./models/user");
 
+// HTTP is stateless. 
+// To associate a request to any other request, we need a way to store user data between HTTP requests. 
+// We assign the client an ID and it makes all further requests using that ID. 
+// Information associated with the client is stored on the server linked to this ID.
 var session = require("express-session");
 var methodOverride = require("method-override");
 var fs = require('fs');
 var multer = require('multer');
 // configure dotenv
 require('dotenv').load();
-/*
-var storage = multer.diskStorage({
-	 destination: function (req, file, cb) {
-		 cb(null, 'uploads')
-	 },
-	 filename: function (req, file, cb) {
-		 cb(null, file.fieldname + '-' + Date.now())
-	 }
-});
- 
-var upload = multer({ storage: storage });
-*/
+
 //requiring routes
 var commentRoutes    = require("./routes/comments"),
     offerRoutes      = require("./routes/offers"),
@@ -88,7 +81,7 @@ app.locals.moment = require('moment');
 // seedDB(); //seed the database
 
 // PASSPORT CONFIGURATION
-app.use(require("express-session")({
+app.use(session({
     secret: "It is a secret!",
     resave: false,
     saveUninitialized: false
