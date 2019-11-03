@@ -26,10 +26,12 @@ var flash        = require("connect-flash");
 var passport    = require("passport");
 var cookieParser = require("cookie-parser");
 var LocalStrategy = require("passport-local");
+
 var Usedstuff  = require("./models/usedstuff");
 var Comment     = require("./models/comment");
 var Offer     = require("./models/offer");
 var User        = require("./models/user");
+
 var session = require("express-session");
 var methodOverride = require("method-override");
 var fs = require('fs');
@@ -87,7 +89,7 @@ app.locals.moment = require('moment');
 
 // PASSPORT CONFIGURATION
 app.use(require("express-session")({
-    secret: "Once again Rusty wins cutest dog!",
+    secret: "It is a secret!",
     resave: false,
     saveUninitialized: false
 }));
