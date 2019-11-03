@@ -124,7 +124,7 @@ module.exports = {
     if(req.user.isAdmin) {
       next();
     } else {
-      req.flash('error', 'This site is now read only thanks to spam and trolls.');
+      req.flash('error', 'Sorry, it is read only page.');
       res.redirect('back');
     }
   },
