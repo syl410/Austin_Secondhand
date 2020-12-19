@@ -281,18 +281,22 @@ router.get("/logout", function(req, res){
 
 // SHOW - shows more info about one usedstuff
 router.get("/:id", function(req, res){
-    //find the usedstuff with provided ID
-    Usedstuff.findById(req.params.id).populate("comments offers").exec(function(err, foundUsedstuff){
-        if(err || !foundUsedstuff){
-            console.log(err);
-            req.flash('error', 'Sorry, that stuff does not exist!');
-            return res.redirect('/');
-        }
-        // console.log(foundUsedstuff)
-        //render show template with that usedstuff
-        // res.render("show", {usedstuff: foundUsedstuff});
-        res.render("show", {usedstuff: foundUsedstuff});
-    });
+    if (req.params.id == "favicon.ico") {
+        res.redirect("/");
+    } else {
+        //find the usedstuff with provided ID
+        Usedstuff.findById(req.params.id).populate("comments offers").exec(function(err, foundUsedstuff){
+            if(err || !foundUsedstuff){
+                console.log(err);
+                req.flash('error', 'Sorry, that stuff does not exist!');
+                return res.redirect('/');
+            }
+            // console.log(foundUsedstuff)
+            //render show template with that usedstuff
+            // res.render("show", {usedstuff: foundUsedstuff});
+            res.render("show", {usedstuff: foundUsedstuff});
+        });
+    }
 });
 
 // EDIT - shows edit form for a usedstuff
