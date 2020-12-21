@@ -6,8 +6,8 @@
         <div class="col-md-3 col-sm-4 col-xs-6">
             <a href="/<%= categoryUsedStuff._id %>">
                 <div class="thumbnail">
-                    <%var str = "data:" + categoryUsedStuff.image.contentType + ";base64, " + categoryUsedStuff.image.data;%>
-                    <div class="imgbackground" style='background-image: url("<%=str%>")'></div>
+                    <%var imageUrl = categoryUsedStuff.image.url%>
+                    <div class="imgbackground" style='background-image: url("<%=imageUrl%>")'></div>
                     <div class="caption" class="row">                        
                         <p>
                             <span class="left" style="color:green; font-size:medium; font-weight:bold">

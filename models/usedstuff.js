@@ -2,7 +2,8 @@ var mongoose = require("mongoose");
 
 var usedstuffSchema = new mongoose.Schema({
    name: String,
-   image: { data: String, contentType: String },
+   // image is stored in Cloudinary storage, so we just need url and filename
+   image: { url: String, filename: String }, 
    description: String,
    cost: Number,
    location: String,

@@ -1,14 +1,19 @@
 var express = require("express");
 var router  = express.Router();
 var passport = require("passport");
-var User = require("../models/user");
+var User = require("../models/user"); // model/user.js
 var Usedstuff = require("../models/usedstuff");
 var Comment = require("../models/comment");
 var Offer = require("../models/offer");
 var middleware = require("../middleware");
 var geocoder = require('geocoder');
 var fs = require('fs');
+
+// set image storage in Cloudinary
 var multer = require('multer');
+var { storage } = require('../cloudinary');
+var cloudinary = require('cloudinary').v2;
+var upload = multer({ storage });
 var path = require('path');
 // get image size
 var sizeOf = require('image-size');
@@ -19,20 +24,6 @@ const sharp = require('sharp');
 
 
 var { checkPostNumber, checkUserNumber, isLoggedIn, checkUserUsedstuff, checkUsedstuffExist, checkUserComment, isAdmin, isTooBig } = middleware; // destructuring assignment
-
-
-// SET STORAGE
-var storage = multer.diskStorage({
-	destination: function (req, file, cb) {
-		cb(null, path.join(__dirname+'/uploads'))
-	},
-	filename: function (req, file, cb) {
-        let a = file.originalname.split('.');
-		cb(null, `${file.fieldname}-${Date.now()}.${a[a.length-1]}`)
-	}
-});
- 
-var upload = multer({ storage: storage });
 
 // Define escapeRegex function for search feature
 function escapeRegex(text) {
@@ -165,63 +156,50 @@ router.post("/", isLoggedIn, checkPostNumber, upload.single('image'), function(r
     var name = req.body.name;
 
     var resizePath = __dirname + "/uploads/resize_" + path.basename(req.file.path);
-    
-    sharp(req.file.path).resize({ width: 512 }).toFile(resizePath)
-    .then(function(newFileInfo) {
-        // newFileInfo holds the output file properties
-        var buff = fs.readFileSync(resizePath);
-        var base64data = buff.toString('base64');
-        var finalImage = {
-           data: base64data,
-           contentType: req.file.mimetype
+    // newFileInfo holds the output file properties
+    var finalImage = {
+       url: req.file.path,
+       filename: req.file.filename
+    }
+    var desc = req.body.description;
+    var author = {
+        id: req.user._id,
+        username: req.user.username
+    }
+    var cost = req.body.cost;
+    var category = req.body.category;
+    geocoder.geocode(req.body.location, function (err, data) {
+        if (err || data.status === 'ZERO_RESULTS') {
+          req.flash('error', 'Invalid address');
+          return res.redirect('back');
         }
-        var desc = req.body.description;
-        var author = {
-            id: req.user._id,
-            username: req.user.username
-        }
-        var cost = req.body.cost;
-        var category = req.body.category;
-        geocoder.geocode(req.body.location, function (err, data) {
-            if (err || data.status === 'ZERO_RESULTS') {
-              req.flash('error', 'Invalid address');
-              return res.redirect('back');
+        
+        var location = req.body.location;
+        var newUsedstuff = {   name: name, 
+                                image: finalImage,
+                                description: desc,
+                                cost: cost,
+                                author:author,
+                                location: location, 
+                                category: category
+        };
+        // Create a new usedstuff and save to DB
+        Usedstuff.create(newUsedstuff, function(err, newlyCreated){
+            if(err){
+                console.log(err);
+            } else {
+                // add posted stuff id to user's "posts"
+                User.findByIdAndUpdate(req.user._id, {$push: {"posts": newlyCreated._id}}, function(err, user){ 
+                    if(err){ 
+                        req.flash("error", err.message); 
+                    } 
+                });
+                req.flash("success","You item has been posted!");
+                //redirect back to usedstuffs page
+                res.redirect("/");
             }
-            
-            var location = req.body.location;
-            var newUsedstuff = {   name: name, 
-                                    image: finalImage,
-                                    description: desc,
-                                    cost: cost,
-                                    author:author,
-                                    location: location, 
-                                    category: category
-            };
-            // Create a new usedstuff and save to DB
-            Usedstuff.create(newUsedstuff, function(err, newlyCreated){
-                if(err){
-                    console.log(err);
-                } else {
-                    // add posted stuff id to user's "posts"
-                    User.findByIdAndUpdate(req.user._id, {$push: {"posts": newlyCreated._id}}, function(err, user){ 
-                        if(err){ 
-                            req.flash("error", err.message); 
-                        } 
-                    });
-                    req.flash("success","You item has been posted!");
-                    //redirect back to usedstuffs page
-                    res.redirect("/");
-                }
-            });
         });
-    })
-    .catch(function(err) {
-        console.log("Error occured");
-        if(err) {
-            console.log(err);
-        }
     });
-    
 });
 
 //NEW - show form to create new usedstuff
@@ -291,9 +269,7 @@ router.get("/:id", function(req, res){
                 req.flash('error', 'Sorry, that stuff does not exist!');
                 return res.redirect('/');
             }
-            // console.log(foundUsedstuff)
             //render show template with that usedstuff
-            // res.render("show", {usedstuff: foundUsedstuff});
             res.render("show", {usedstuff: foundUsedstuff});
         });
     }
@@ -346,6 +322,8 @@ router.delete("/:id", isLoggedIn, checkUserUsedstuff, function(req, res) {
                 if(err){ 
                     req.flash("error", err.message); 
                     res.redirect("back"); 
+                } else {
+                    cloudinary.uploader.destroy(req.usedstuff.image.filename);
                 }
             });
             

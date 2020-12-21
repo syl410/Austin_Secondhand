@@ -10,7 +10,7 @@ $('#usedstuff-search').on('input', function() {
         <div class="col-md-3 col-sm-4 col-xs-6">
           <a href="/${ usedstuff._id }">
             <div class="thumbnail">
-              <div class="imgbackground" style='background-image: url("data:${ usedstuff.image.contentType }>;base64, ${ usedstuff.image.data }")'></div>
+              <div class="imgbackground" style='background-image: url("${ usedstuff.image.url }")'></div>
               <div class="caption" class="row">   
                 <p>
                     <span class="left" style="color:green; font-size:medium; font-weight:bold">

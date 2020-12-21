@@ -24,8 +24,8 @@
             <div class="col-md-3 col-sm-4 col-xs-6">
                 <a href="/<%= usedstuff._id %>">
                     <div class="thumbnail">
-                        <%var str = "data:" + usedstuff.image.contentType + ";base64, " + usedstuff.image.data;%>
-                        <div class="imgbackground" style='background-image: url("<%=str%>")'></div>
+                        <%var imageUrl = usedstuff.image.url%>
+                        <div class="imgbackground" style='background-image: url("<%=imageUrl%>")'></div>
                         <div class="caption" class="row">                        
                             <p>
                                 <span class="left" style="color:green; font-size:medium; font-weight:bold">
