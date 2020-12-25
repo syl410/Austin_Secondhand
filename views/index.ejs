@@ -1,24 +1,25 @@
 <% include ./partials/header %> 
 
      <header class="jumbotron" style="padding-top: 0.3em; padding-bottom: 0.7em">
-         <!--<div class="container">-->
-             <h2 style="color: black;">Buy and Sell Used Stuff in Austin, TX</h2>
-             <p>
-              <form action="/" method="GET" class="form-inline" id="usedstuff-search">
+        <h2 style="color: black;">Buy and Sell Used Stuff in Austin, TX</h2>
+        <!-- welcome msg and search -->
+        <p>
+            <form action="/" method="GET" class="form-inline" id="usedstuff-search">
                 <div class="form-group" style="font-size:1.5em">
-                  <span class="greenColor">Secondhand stuff,</span> <span style="color: Fuchsia">firsthand fun! </span><input type="text" name="search" placeholder="search and buy..." class="form-control" maxlength="30" >
+                    <span class="greenColor">Secondhand stuff,</span> <span style="color: Fuchsia">firsthand fun! </span><input type="text" name="search" placeholder="search and buy..." class="form-control" maxlength="30" >
                 </div>
-              </form>
-             </p>
-            <a href="/Electronics" class="noline" style="text-decoration: none;">Electronics</a>
-            <a href="/Furniture" class="noline" style="text-decoration: none;">Furniture</a>
-            <a href="/Clothing" class="noline" style="text-decoration: none;">Clothing</a>
-            <a href="/Automotive" class="noline" style="text-decoration: none;">Automotive</a>
-            <a href="/Appliances" class="noline" style="text-decoration: none;">Appliances</a>
-            <a href="/Other" class="noline" style="text-decoration: none;">Other</a>
-         <!--</div>-->
+            </form>
+        </p>
+        <!-- category -->
+        <a href="/Electronics" class="noline" style="text-decoration: none;">Electronics</a>
+        <a href="/Furniture" class="noline" style="text-decoration: none;">Furniture</a>
+        <a href="/Clothing" class="noline" style="text-decoration: none;">Clothing</a>
+        <a href="/Automotive" class="noline" style="text-decoration: none;">Automotive</a>
+        <a href="/Appliances" class="noline" style="text-decoration: none;">Appliances</a>
+        <a href="/Other" class="noline" style="text-decoration: none;">Other</a>
      </header>
      
+     <!-- display all items -->
      <div class="row text-center flex-wrap" id="usedstuff-grid">
         <% usedstuffs.forEach(function(usedstuff){ %>
             <div class="col-md-3 col-sm-4 col-xs-6">

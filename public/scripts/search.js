@@ -1,8 +1,12 @@
+// jQuery AJAX
 $('#usedstuff-search').on('input', function() {
-  var search = $(this).serialize();
+  // (this) refers to the jqXHR object of the Ajax call
+  // search is "search=<input>", like "search=iphone", "search=" (empty)
+  var search = $(this).serialize(); 
   if(search === "search=") {
     search = "all"
   }
+  // the info after '?' will not be in cookie, it is the same as '/'
   $.get('/?' + search, function(data) {
     $('#usedstuff-grid').html('');
     data.reverse().forEach(function(usedstuff) {

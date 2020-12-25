@@ -12,9 +12,6 @@ var app         = express();
 var bodyParser  = require("body-parser");
 
 // Mongoose is an Object Data Modeling (ODM) library for MongoDB and Node.js. 
-// It manages relationships between data, provides schema validation, 
-// and is used to translate between objects in code and the representation of those objects in MongoDB.
-// https://www.freecodecamp.org/news/introduction-to-mongoose-for-mongodb-d2a7aa593c57/
 var mongoose    = require("mongoose");
 
 // The flash is a special area of the session used for storing messages. 
@@ -27,6 +24,7 @@ var passport    = require("passport");
 var cookieParser = require("cookie-parser");
 var LocalStrategy = require("passport-local");
 
+// models
 var Usedstuff  = require("./models/usedstuff");
 var Comment     = require("./models/comment");
 var Offer     = require("./models/offer");
@@ -38,7 +36,8 @@ var User        = require("./models/user");
 // Information associated with the client is stored on the server linked to this ID.
 var session = require("express-session");
 var methodOverride = require("method-override");
-var fs = require('fs');
+
+// middleware for handling multipart/form-data, which is used for uploading files
 var multer = require('multer');
 // configure dotenv
 require('dotenv').load();
@@ -53,9 +52,7 @@ var commentRoutes    = require("./routes/comments"),
 // If we want to use mongoose in different position inside the codes it must be viewed as global mode
 mongoose.Promise = global.Promise;
 
-// const databaseUri = process.env.MONGODB_URI || 'mongodb://localhost/AustinSecondHand_v11';
-const databaseUri = process.env.MONGODB_URI || 'mongodb+srv://syl410:syl5689@cluster0-6c1ey.mongodb.net/Austin_Secondhand?retryWrites=true&w=majority';
-//  process.env.MONGODB_URI may be undefined
+const databaseUri = 'mongodb+srv://syl410:syl5689@cluster0-6c1ey.mongodb.net/Austin_Secondhand?retryWrites=true&w=majority';
 
 mongoose.connect(databaseUri, { useMongoClient: true })
       .then(() => console.log(`Database connected`))
@@ -71,14 +68,14 @@ app.set("view engine", "ejs");
 // __dirname is directory path of currently executing js
 app.use(express.static(__dirname + "/public"));
 
+// PUT and DELETE are supported by HTML, which need method-override
 // https://dev.to/moz5691/method-override-for-put-and-delete-in-html-3fp2
 app.use(methodOverride('_method'));
 app.use(cookieParser('secret'));
 
-//require moment
+// require moment
 // Moment.js: use the native JavaScript Date object directly. 
 app.locals.moment = require('moment');
-// seedDB(); //seed the database
 
 // PASSPORT CONFIGURATION
 app.use(session({

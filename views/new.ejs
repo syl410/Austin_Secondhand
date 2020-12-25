@@ -1,26 +1,34 @@
-<% include ./partials/header %>
-                <script>
-                    
-                    // $("#YYY").attr('disabled', true);
-                    // $('#submit').prop("disabled", true);
-                    // .bind() Attach a click event to the element
-                    $(document).ready(function(){
-                        $("#xxx").attr('disabled', false);
-                        $('#picture').bind('change', function() {
-                            if(this.files[0].size > 5000000) {
-                                $("#xxx").attr('disabled', true);
-                                $("small").css("color", "red");
-                            } else {
-                                $("#xxx").attr('disabled', false);
-                                $("small").css("color", "grey");
-                            }
-                        });
-                        
-                        //var picsize = $(this).image[0].size;
-                       
-                    });
-                </script>
+<!-- ejs for the page of creating a new used item -->
 
+<% include ./partials/header %>
+    <script>
+        // check uploaded image size and image format
+        // it should not be greater than 5MB
+        // it should be png, pjep, or jpg
+        $(document).ready(function(){
+            $("#new_post_btn").attr('disabled', false);
+            $('#picture').on('change', function() {
+                // check file size
+                if(this.files[0].size > 5000000) {
+                    $("#new_post_btn").attr('disabled', true);
+                    $("#size_reminder").css("color", "red");
+                } else {
+                    $("#new_post_btn").attr('disabled', false);
+                    $("#size_reminder").css("color", "grey");
+                }
+                // check file type
+                var fileType = this.files[0]['type'];
+                var validImageTypes = ['image/jpeg', 'image/jpg',  'image/png'];
+                if(!validImageTypes.includes(fileType)) {
+                    $("#new_post_btn").attr('disabled', true);
+                    $("#format_reminder").css("color", "red");
+                } else {
+                    $("#new_post_btn").attr('disabled', false);
+                    $("#format_reminder").css("color", "grey");
+                }
+            });
+        });
+    </script>
 
     <div class="row">
         <h1 style="text-align: center">Post an item to sell</h1>
@@ -28,12 +36,14 @@
             <form action="/" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="name">Name</label>
-                    <input class="form-control" type="text" name="name" id="name" placeholder="Used phone" required maxlength="32">
+                    <input class="form-control" type="text" name="name" id="name" placeholder="Used iPhone X" required maxlength="32">
                 </div>
                 <div class="form-group">
                     <label for="image">Upload photo</label>
                     <input id="picture" type="file" name="image" accept="image/*" required>
-                    <small class="greyColor">Photo size should be less then 5MB (png, jpeg, jpg).</small>
+                    <small id="size_reminder" class="greyColor">Photo size should be less then 5MB.</small>
+                    <br>
+                    <small id="format_reminder" class="greyColor">Photo format should be png, jpeg, or jpg.</small>
                 </div>
                 <div class="form-group">
                     <label for="cost">Price</label>
@@ -62,10 +72,10 @@
                 </div>
                 <br>
                 <div class="form-group">
-                    <button id="xxx" class="btn btn-lg btn-success btn-block boldWord">Post!</button>
+                    <button id="new_post_btn" class="btn btn-lg btn-success btn-block boldWord">Post!</button>
                 </div>
             </form>
-            <a href="/" class="greenColor" id="YYY" >Go Back</a>
+            <a href="/" class="greenColor" >Go Home Page</a>
         </div>
     </div>
 <% include ./partials/footer %>

@@ -40,7 +40,6 @@ router.post("/", isLoggedIn, checkUsedstuffExist, function(req, res){
                     //add username and id to comment
                     comment.author.id = req.user._id;
                     comment.author.username = req.user.username;
-                    console.log("2 comment.author is " + comment.author);
                     //save comment
                     comment.save();
                     usedstuff.comments.push(comment);

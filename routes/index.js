@@ -6,8 +6,7 @@ var Usedstuff = require("../models/usedstuff");
 var Comment = require("../models/comment");
 var Offer = require("../models/offer");
 var middleware = require("../middleware");
-var geocoder = require('geocoder');
-var fs = require('fs');
+var geocoder = require('geocoder'); // location to latitue and longitude
 
 // set image storage in Cloudinary
 var multer = require('multer');
@@ -15,30 +14,32 @@ var { storage } = require('../cloudinary');
 var cloudinary = require('cloudinary').v2;
 var upload = multer({ storage });
 var path = require('path');
-// get image size
-var sizeOf = require('image-size');
-// a tool to change size of base64 image
-var resizebase64 = require('resize-base64'); 
-var im = require('imagemagick');
-const sharp = require('sharp');
-
 
 var { checkPostNumber, checkUserNumber, isLoggedIn, checkUserUsedstuff, checkUsedstuffExist, checkUserComment, isAdmin, isTooBig } = middleware; // destructuring assignment
 
 // Define escapeRegex function for search feature
+// "(phone&5" -> "\(phone\&5"
 function escapeRegex(text) {
-    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"); // $& means the whole matched string, which is (, or & or ...
 };
 
 //INDEX - show all usedstuffs
 router.get("/", function(req, res){
+  // each time user type something in search input, it will send a request
+  // req.xhr: a flag indicating whether the current request (req) appears to be an AJAX request
   if(req.query.search && req.xhr) {
+      // g modifier: global. All matches
+      // i modifier: case insensitive
+      // "(phone&5" -> "\(phone\&5" -> "/\(phone\&5/gi"
       const regex = new RegExp(escapeRegex(req.query.search), 'gi');
-      // Get all usedstuffs from DB
+      // Get all matched usedstuffs from DB
       Usedstuff.find({name: regex}, function(err, allUsedstuffs){
          if(err){
             console.log(err);
          } else {
+            // sends a JSON response composed of the specified data (matched stuffs)
+            // header wouldn't change. index.ejs will use allUsedstuffs for display (forEach)
+            // status 200 is default
             res.status(200).json(allUsedstuffs);
          }
       });
@@ -46,18 +47,17 @@ router.get("/", function(req, res){
       // Get all usedstuffs from DB
       Usedstuff.find({}, function(err, allUsedstuffs){
          if(err){
-             console.log(err);
+            console.log(err);
          } else {
             if(req.xhr) {
-              res.json(allUsedstuffs);
+                res.json(allUsedstuffs);
             } else {
-              res.render("index",{usedstuffs: allUsedstuffs.reverse(), page: '/'});
+                res.render("index",{usedstuffs: allUsedstuffs.reverse(), page: '/'});
             }
          }
       });
   }
 });
-
 
 //About
 router.get("/about", function(req, res){
@@ -137,25 +137,12 @@ router.get("/Electronics", function(req, res){
     });
 });
 
-/*
-function sleep(milliseconds) {
-    console.log("start sleeping");
-  var start = new Date().getTime();
-  for (var i = 0; i < 1e7; i++) {
-    if ((new Date().getTime() - start) > milliseconds){
-      break;
-    }
-  }
-}
-*/
-
-//CREATE - add new usedstuff to DB
-//router.post("/", isloggedIn, isTooBig, upload.single('image'), function(req, res){
+// CREATE - add new usedstuff to DB
+// upload.single('image') will upload the image to cloudinary and update the req.file.path
 router.post("/", isLoggedIn, checkPostNumber, upload.single('image'), function(req, res){
     // get data from form and add to secondhand stuff array
     var name = req.body.name;
 
-    var resizePath = __dirname + "/uploads/resize_" + path.basename(req.file.path);
     // newFileInfo holds the output file properties
     var finalImage = {
        url: req.file.path,
@@ -169,6 +156,7 @@ router.post("/", isLoggedIn, checkPostNumber, upload.single('image'), function(r
     var cost = req.body.cost;
     var category = req.body.category;
     geocoder.geocode(req.body.location, function (err, data) {
+        // check if location is valid
         if (err || data.status === 'ZERO_RESULTS') {
           req.flash('error', 'Invalid address');
           return res.redirect('back');
@@ -212,36 +200,37 @@ router.get("/register", function(req, res){
    res.render("register", {page: 'register'}); 
 });
 
-//handle sign up logic
+// handle sign up logic
+// currently one one email can have multiple accounts
 router.post("/register", checkUserNumber, function(req, res){
-    
     var newUser = new User({username: req.body.username, email: req.body.email});
     if(req.body.username === "admin") {
-      newUser.isAdmin = true;
+        newUser.isAdmin = true;
     }
+    // register(user, password, cb) Convenience method to register a new user instance with a given password
     User.register(newUser, req.body.password, function(err, user){
         if(err){
             console.log(err);
             return res.render("register", {error: err.message});
         }
         passport.authenticate("local")(req, res, function(){
-           req.flash("success", "Signed up sccessfully! Welcome to Austin Secondhand, " + req.body.username);
-           res.redirect("/"); 
+            req.flash("success", "Signed up sccessfully! Welcome to Austin Secondhand, " + req.body.username);
+            res.redirect("/");
         });
     });
 });
 
-//show login form
+// show login form
 router.get("/login", function(req, res){
    res.render("login", {page: 'login'}); 
 });
 
-//handling login logic
+// handling login logic
 router.post("/login", passport.authenticate("local", 
     {
         successRedirect: "/",
         failureRedirect: "/login",
-        failureFlash: true,
+        failureFlash: true, // true means "Password or username are incorrect". It can be other String also
         successFlash: 'Welcome back!'
     }), function(req, res){
 });
@@ -304,50 +293,70 @@ router.put("/:id", isLoggedIn, checkUserUsedstuff, function(req, res){
 
 // DELETE - removes usedstuff and its comments from the database
 router.delete("/:id", isLoggedIn, checkUserUsedstuff, function(req, res) {
+    // remove comments
     Comment.remove({
-      _id: {
-        $in: req.usedstuff.comments
-      }
+        _id: {
+          $in: req.usedstuff.comments
+        }
     }, function(err) {
-      if(err) {
-          req.flash('error', err.message);
-          res.redirect('/');
-      } else {
-          req.usedstuff.remove(function(err) {
-            if(err) {
-                req.flash('error', err.message);
-                return res.redirect('/');
-            }
-            User.findByIdAndUpdate(req.user._id, {$pull: {"posts": req.usedstuff._id}}, function(err, user){ 
-                if(err){ 
-                    req.flash("error", err.message); 
-                    res.redirect("back"); 
+        if(err) {
+            req.flash('error', err.message);
+            res.redirect('/');
+        } else {
+            // remove offers
+            Offer.remove({
+                _id: {
+                    $in: req.usedstuff.offers
+                }
+            }, function(err) {
+                if (err) {
+                    req.flash('error', err.message);
+                      res.redirect('/');
                 } else {
-                    cloudinary.uploader.destroy(req.usedstuff.image.filename);
+                    // remove used stuff
+                    req.usedstuff.remove(function(err) {
+                        if(err) {
+                            req.flash('error', err.message);
+                            return res.redirect('/');
+                        }
+                        User.findByIdAndUpdate(req.user._id, {$pull: {"posts": req.usedstuff._id}}, function(err, user){ 
+                            if(err){ 
+                                req.flash("error", err.message); 
+                                res.redirect("back"); 
+                            } else {
+                                cloudinary.uploader.destroy(req.usedstuff.image.filename);
+                            }
+                        });
+                        
+                        req.flash('error', 'You item has been deleted!');
+                        res.redirect('/');
+                    });
                 }
             });
-            
-            req.flash('error', 'You item has been deleted!');
-            res.redirect('/');
-          });
-      }
-    })
+        }
+    });
 });
 
-// PUT - updates user saveditems in the database
+// PUT - updates user saveditems and savedusers of used stuff in the database
 router.put("/:id/saveditems", isLoggedIn, checkUsedstuffExist, function(req, res){
     var currentUserId = req.body.currentUserId;
     var usedstuffId = req.body.usedstuffId;
     
     User.findByIdAndUpdate(currentUserId, {$push: {"saveditems": usedstuffId}}, function(err, user){ 
-        if(err){ 
+        if (err) { 
             req.flash("error", err.message); 
-        } 
+        } else {
+            Usedstuff.findByIdAndUpdate(usedstuffId, {$push: {"savedUsers": currentUserId}}, function(err, user){ 
+                if(err){ 
+                    req.flash("error", err.message); 
+                }
+            });
+        }
     });
 });
 
 
-// DELETE - delete user saveItem in the database
+// DELETE - delete user saveItem and savedUsers of used stuff in the database
 router.delete("/:id/saveditems", isLoggedIn, checkUsedstuffExist, function(req, res){
     var currentUserId = req.body.currentUserId;
     var usedstuffId = req.body.usedstuffId;
@@ -356,9 +365,15 @@ router.delete("/:id/saveditems", isLoggedIn, checkUsedstuffExist, function(req, 
         if(err){ 
             req.flash("error", err.message); 
             res.redirect("back"); 
-        } 
+        } else {
+            Usedstuff.findByIdAndUpdate(usedstuffId, {$pull: {"savedUsers": currentUserId}}, function(err, user){ 
+                if(err){ 
+                    req.flash("error", err.message); 
+                    res.redirect("back"); 
+                } 
+            });
+        }
     });
 });
-
 
 module.exports = router;

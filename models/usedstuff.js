@@ -27,6 +27,13 @@ var usedstuffSchema = new mongoose.Schema({
          type: mongoose.Schema.Types.ObjectId,
          ref: "Comment"
       }
+   ],
+   // it records the user who save the used stuff. Currently this field doesn't really use
+   savedUsers: [
+       {
+         type: mongoose.Schema.Types.ObjectId,
+         ref: "User"
+      }
    ]
 }, {
   usePushEach: true

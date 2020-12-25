@@ -4,6 +4,9 @@
 <% var usedstuffId = currentUser ? usedstuff._id : 0 %>
 <% var currentUser_saveditems = currentUser ? currentUser.saveditems : null %>
 
+  <!-- save item -->
+  <!-- enhancement: once an ithem is deleted, it should be removed from users' saveitems -->
+  <!-- currently the app just doesn't display deleted items in saveitems -->
   <script>
     $(document).ready(function(){
       $(".star").click(function() {
@@ -13,8 +16,8 @@
           var currentUser_saveditems = "<%= currentUser_saveditems %>";
           
           if(currentUser_saveditems.includes(usedstuffId)) {
-            // var i = currentUser_saveditems.indexOf(usedstuffId);
-            // currentUser.saveditems.splice(i, 1);
+            // remove the used stuff from current user's saveditems
+            // remove the current user ID from used stuff's saveusers
             $.ajax({
               url: window.location.href + "/saveditems",
               data: {
@@ -23,8 +26,9 @@
               },
               type: 'DELETE'
             });
-            
           } else {
+            // add the used stuff to current user's saveditems
+            // add current user ID to used stuff
             $.ajax({
               url: window.location.href + "/saveditems",
               data: {
@@ -40,9 +44,10 @@
 
 <div class="row" style="margin-top:10px">
   <div class="col-md-3 col-sm-4">
-    <%var address = usedstuff.location.replace(" ","+");%>
+    <% var address = usedstuff.location.replace(" ","+");%>
+    <% var map_src_uri = process.env.MAP_SRC_URI1 + address + process.env.MAP_SRC_URI2%> <!--map_src_uri is the map API-->
     <p class="breakWord"><span class="boldWord">Location:</span> <span class="greenColor">near</span> <%=usedstuff.location%></p>
-    <img class="img-responsive thumbnail" src="https://image.maps.cit.api.here.com/mia/1.6/mapview?app_id=BvDECiSoKxOYlaUP08pI&app_code=WyR6_qxgXonr_gUIPfgxww&ci=<%= address %>&h=350&w=280&z=12&u=1k&f=1&nodot=true&ml=eng&style=flame" alt="Map of <%= address %> is not avariale">
+    <img class="img-responsive thumbnail" src="<%=map_src_uri%>" alt="Map of <%= address %> is not avariale">
   </div>
   
   <div class="col-md-6 col-sm-8">
@@ -118,8 +123,8 @@
       
       <div class="aLine"></div>
       <!--display comments-->
-      <!--reverse comment (time reverse order, new at top)-->
-      <% usedstuff.comments.reverse().forEach(function(comment){ %> <!--BEGIN of forEach-->
+      <!--comments.reverse(): reverse comment (time reverse order, new at top)-->
+      <% usedstuff.comments.forEach(function(comment){ %> <!--BEGIN of forEach-->
       <div class="row">
         <div class="col-sm-12">
           <strong><span class='fas fa-user'></span> <%= comment.author.username %></strong>
