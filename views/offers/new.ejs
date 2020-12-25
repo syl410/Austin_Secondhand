@@ -4,7 +4,7 @@
         <div style="width: 30%; margin: 25px auto;">
             <form action="/<%= usedstuff._id %>/offers" method="POST">
                 <div class="form-group">
-                    <input class="form-control" type="number" min="0" max="1000000" name="offer[price]" placeholder="offer price" required>
+                    <input class="form-control" type="number" step="0.01" min="0" max="1000000" name="offer[price]" placeholder="offer price" required>
                 </div>
                 <small style="color:grey">After you submit an offer, your email will be shown to poster only.</small>
                 <br>
