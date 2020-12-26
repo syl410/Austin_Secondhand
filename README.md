@@ -7,4 +7,4 @@ Email: yulins@umich.edu
 Linkedin: https://www.linkedin.com/in/yulin-shi/
 
 ![plot](./public/slides/1.JPG)
-https://raw.githubusercontent.com/syl410/Austin_Secondhand/master/public/slides/1.JPG
+![plot](./public/slides/2.JPG)
