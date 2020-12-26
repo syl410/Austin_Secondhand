@@ -4,7 +4,6 @@ Hi, thanks for visiting Austin Secondhand Web! <br />
 This web is developed after I learned web development from The Web Developer Bootcamp, Udemy.
 
 Feel free to contact me if you have any suggestions/questions. <br />
-Email: yulins@umich.edu <br />
 Linkedin: https://www.linkedin.com/in/yulin-shi/
 
 ![plot](./public/slides/1.JPG)
